@@ -24,10 +24,6 @@ jobs:
           python-version: 3.x
       - name: Install dependencies
         run: python -m pip install --upgrade requests pyaes 
-      - name: BYZH Experience
-        env:
-          COOKIE: ${{ secrets.BYZH_COOKIE }}
-        run: python Experience/buyizhihuo.py || echo "BYZH_FAIL=true" >> $GITHUB_ENV
       - name: Hostloc Experience
         env:
           HOSTLOC_USERNAME: ${{ secrets.HOSTLOC_USERNAME }}
@@ -36,7 +32,6 @@ jobs:
       - name: Notify
         if: env.BYZH_FAIL || env.HOSTLOC_FAIL
         run: |
-          [ $BYZH_FAIL ] && python Notify.py '不移之火'
           [ $HOSTLOC_FAIL ] && python Notify.py 'Hostloc'
   
   epic_free_games:
@@ -71,62 +66,6 @@ jobs:
       - name: Notify
         if: steps.epic_experience.outputs.status == 'Error'
         run: pip install requests && python Notify.py 'Epic'
-
-  tieba_experience:
-    name: TieBa Experience
-    runs-on: ubuntu-latest
-    steps:
-      - name: Sleep Random Time
-        run: sleep $(shuf -i 10-60 -n 1)
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
-      - name: Clone
-        run: git clone --depth 1 https://github.com/BidenJoe/TiebaSignIn Experience
-      - name: Experience
-        id: tieba_experience
-        env:
-          BDUSS: ${{ secrets.BAIDU_BDUSS }}
-        run: cd Experience && mvn compile exec:java -Dexec.mainClass="top.srcrs.Run" -Dexec.args="${BDUSS} ${PUSHINFO}" || echo "::set-output name=status::Error"
-      - uses: actions/checkout@v2
-        if: steps.tieba_experience.outputs.status == 'Error'
-      - name: Set Python
-        if: steps.tieba_experience.outputs.status == 'Error'
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.x
-      - name: Notify
-        if: steps.tieba_experience.outputs.status == 'Error'
-        run: pip install requests && python Notify.py '贴吧'
-  
-  cloud189:
-    name: Cloud189 Experience
-    runs-on: ubuntu-latest
-    steps:
-      - name: Sleep Random Time
-        run: sleep $(shuf -i 10-60 -n 1)
-      - name: Set Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.x
-      - name: Install dependencies
-        run: |
-          git clone --depth 1 https://github.com/mengshouer/CheckinBox Experience
-          pip3 install -r Experience/requirements.txt
-      - name: Experience
-        id: cloud189_experience
-        env:
-          username: ${{ secrets.CLOUD189_USER }}
-          password: ${{ secrets.CLOUD189_PW }}
-        run: |
-          python Experience/Cloud189Checkin/C189CheckinForSCF.py > msg && cat msg
-          [[ $(grep '出错' msg) ]] && echo "::set-output name=status::Error" || true
-      - uses: actions/checkout@v2
-        if: steps.cloud189_experience.outputs.status == 'Error'
-      - name: Notify
-        if: steps.cloud189_experience.outputs.status == 'Error'
-        run: python Notify.py '天翼云盘'
 
   pojie:
     name: 52Pojie Experience
