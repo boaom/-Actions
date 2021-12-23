@@ -67,6 +67,30 @@ jobs:
         if: steps.epic_experience.outputs.status == 'Error'
         run: pip install requests && python Notify.py 'Epic'
 
+epicgames-claimer:
+    name: epicgames-claimer
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sleep Random Time
+        run: sleep $(shuf -i 10-60 -n 1)
+      - name: Set Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+      - name: Clone
+        run: git clone --depth 1 https://github.com/luminoleon/epicgames-claimer Experience
+      - name: Experience
+        id: epic_experience
+        env:
+          EPIC_MAIL: ${{ secrets.EPIC_MAIL }}
+          EPIC_PASS: ${{ secrets.EPIC_PASS }}
+        run: |
+          cd Experience && pip3 install -r requirements.txt
+          sudo sh install_dependencies.sh
+      - name: main
+        if: steps.epic_experience.outputs.status == 'Error'
+        run: pip install requests && python main.py  -u $EPIC_MAIL -p $EPIC_PASS
+        
   pojie:
     name: 52Pojie Experience
     runs-on: ubuntu-latest
