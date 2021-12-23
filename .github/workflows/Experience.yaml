@@ -89,7 +89,7 @@ epicgames-claimer:
           sudo sh install_dependencies.sh
       - name: main
         if: steps.epic_experience.outputs.status == 'Error'
-        run: pip install requests && python main.py  -u $EPIC_MAIL -p $EPIC_PASS
+        run: python main.py  -u $EPIC_MAIL -p $EPIC_PASS
         
   pojie:
     name: 52Pojie Experience
