@@ -67,7 +67,7 @@ jobs:
         if: steps.epic_experience.outputs.status == 'Error'
         run: pip install requests && python Notify.py 'Epic'
 
-epicgames-claimer:
+  epicgames-claimer:
     name: epicgames-claimer
     runs-on: ubuntu-latest
     steps:
@@ -89,7 +89,7 @@ epicgames-claimer:
       - name: main
         run: python main.py  -u $EPIC_MAIL -p $EPIC_PASS
 
-521pojie:
+  521pojie:
     name: 52Pojie Experience
     runs-on: ubuntu-latest
     steps:
